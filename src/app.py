@@ -45,8 +45,8 @@ def create_app():
     def check_memcached():
         host = request.args.get("host")
         port = request.args.get("port")
-        port = 11211 if not port else port
-        host = request.remote_addr if not host else host
+        port = port or 11211
+        host = host or request.remote_addr
         return str(isOpen(host, port))
 
     return app

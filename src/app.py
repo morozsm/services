@@ -18,6 +18,7 @@ def isOpen(ip: str | None, port: str | int) -> bool:
     """
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
+        s.settimeout(2)
         s.connect((ip, int(port)))
         s.shutdown(2)
         return True
@@ -26,7 +27,7 @@ def isOpen(ip: str | None, port: str | int) -> bool:
 
 
 def get_ip(req) -> str:
-
+    print(req.headers.get("X-Forwarded-For"))
     return req.headers.get("X-Forwarded-For") or req.remote_addr
 
 

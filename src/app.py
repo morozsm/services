@@ -1,4 +1,5 @@
 import socket
+from urllib.request import Request
 
 from flask import Flask, jsonify, request
 
@@ -24,6 +25,11 @@ def isOpen(ip: str | None, port: str | int) -> bool:
         return False
 
 
+def get_ip(req) -> str:
+
+    return req.headers.get("X-Forwarded-For") or req.remote_addr
+
+
 def create_app():
     app = Flask(__name__)
 
@@ -38,14 +44,17 @@ def create_app():
         Returns:
             str: Ip address
         """
-        return request.remote_addr, 200
+        try:
+            return get_ip(request), 200
+        except (RuntimeError, ValueError) as err:
+            return err, 500
 
     @app.route("/memcached")
     def check_memcached():
         host = request.args.get("host")
         port = request.args.get("port")
         port = port or 11211
-        host = host or request.remote_addr
+        host = host or get_ip(request)
         return str(isOpen(host, port))
 
     return app

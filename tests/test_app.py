@@ -45,3 +45,9 @@ def test_memcached(client):
     response = client.get("/memcached")
     assert response.status_code == 200
     assert response.data == b"False"
+
+
+def test_memcached_port(client):
+    response = client.get("/memcached?host=127.0.0.1&port11211")
+    assert response.status_code == 200
+    assert response.data == b"False"
